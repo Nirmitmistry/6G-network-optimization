@@ -1,0 +1,12 @@
+network:
+  num_base_stations: 10
+  num_users: 30
+  area_size: 1000          # 1km x 1km in meters
+  frequency_ghz: 28        # mmWave 6G band
+  max_bandwidth_mhz: 400
+
+training:
+  episodes: 500
+  lr: 0.001
+  gamma: 0.99
+  batch_size: 64
