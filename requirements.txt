@@ -1,5 +1,9 @@
-numpy>=1.26
-networkx>=3.2
-torch>=2.2
-torch-geometric>=2.5
-pyyaml>=6.0
+numpy
+networkx
+torch
+torch-geometric
+pyyaml
+streamlit
+stable-baselines3
+matplotlib
+gym

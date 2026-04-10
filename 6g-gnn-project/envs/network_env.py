@@ -8,6 +8,7 @@ Reward: weighted sum of throughput, fairness, and latency penalty
 
 import gym
 import numpy as np
+import torch
 from gym import spaces
 from utils.graph_builder import build_network_graph
 from utils.metrics import compute_sinr, compute_throughput, compute_fairness_index
@@ -96,3 +97,20 @@ class NetworkEnv(gym.Env):
 
     def get_graph(self):
         return build_network_graph(self.bs_positions, self.user_positions)
+
+    def get_gnn_state(self, encoder, device):
+        """Run current topology through GraphEncoder and return a flat numpy state."""
+        graph = self.get_graph().to(device)
+        with torch.no_grad():
+            graph_emb, node_emb = encoder(graph)
+        # graph_emb: (1, out_channels), node_emb: (num_nodes, out_channels)
+        # Concatenate global embedding + flattened node embeddings + allocation ratios
+        alloc = torch.tensor(
+            self.allocations.astype(np.float32) / self.num_bs, device=device
+        )
+        state = torch.cat([
+            graph_emb.squeeze(0),          # (32,)
+            node_emb.flatten(),            # (num_nodes * 32,)
+            alloc,                         # (num_users,)
+        ], dim=0)
+        return state.cpu().numpy()
