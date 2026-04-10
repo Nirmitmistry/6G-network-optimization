@@ -18,7 +18,7 @@ with open("configs/config.yaml") as f:
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load GNN encoder
+
 encoder = GraphEncoder(in_channels=3, hidden_channels=64, out_channels=32).to(device)
 gnn_path = "results/gnn_pretrained.pt"
 if os.path.exists(gnn_path):

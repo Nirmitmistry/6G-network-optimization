@@ -1,11 +1,3 @@
-"""
-network_env.py
-OpenAI Gym-compatible 6G network environment.
-State: GNN-encoded node embeddings + user demands
-Action: (user_id, bs_id, bandwidth_fraction) discrete/continuous
-Reward: weighted sum of throughput, fairness, and latency penalty
-"""
-
 import gym
 import numpy as np
 import torch
