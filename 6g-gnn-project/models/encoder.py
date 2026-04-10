@@ -16,13 +16,6 @@ class GraphEncoder(nn.Module):
         self.pool_fc = nn.Linear(out_channels, out_channels)
 
     def forward(self, data):
-        """
-        Args:
-            data: torch_geometric.data.Data (single graph or batch)
-        Returns:
-            graph_embedding: (batch_size, out_channels) global graph vector
-            node_embeddings: (num_nodes, out_channels) per-node vectors
-        """
         node_emb = self.gnn(data)                          # (N, out_channels)
         graph_emb = torch.mean(node_emb, dim=0, keepdim=True)  # global mean pool
         graph_emb = torch.relu(self.pool_fc(graph_emb))

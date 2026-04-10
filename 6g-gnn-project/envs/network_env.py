@@ -17,11 +17,9 @@ class NetworkEnv(gym.Env):
         self.area_size = net["area_size"]
         self.max_bw = net["max_bandwidth_mhz"] * 1e6  # Hz
 
-        # Action: assign user u to base station b with bandwidth fraction f
-        # Encoded as a single integer: u * num_bs + b  (bandwidth sampled separately)
+
         self.action_space = spaces.Discrete(self.num_users * self.num_bs)
 
-        # Observation: flattened positions + current allocations
         obs_dim = (self.num_bs + self.num_users) * 2 + self.num_users
         self.observation_space = spaces.Box(
             low=0.0, high=float(self.area_size), shape=(obs_dim,), dtype=np.float32
@@ -39,14 +37,13 @@ class NetworkEnv(gym.Env):
         self.step_count = 0
         return self._get_obs()
 
-    # ------------------------------------------------------------------
     def step(self, action: int):
         user_id = action // self.num_bs
         bs_id = action % self.num_bs
 
         self.allocations[user_id] = bs_id
 
-        # Compute reward
+   
         throughputs = self._compute_throughputs()
         fairness = compute_fairness_index(throughputs)
         demand_satisfaction = np.mean(np.minimum(throughputs / (self.demands + 1e-9), 1.0))
@@ -55,7 +52,6 @@ class NetworkEnv(gym.Env):
         self.step_count += 1
         done = self.step_count >= 200
 
-        # Random user mobility
         self.user_positions += np.random.uniform(-5, 5, self.user_positions.shape)
         self.user_positions = np.clip(self.user_positions, 0, self.area_size)
 
