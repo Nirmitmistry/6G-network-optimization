@@ -1,26 +1,34 @@
-import sys, os
-sys.path.insert(0, os.path.dirname(__file__))
-
-import streamlit as st
-import numpy as np
-import torch
-import matplotlib.pyplot as plt
-import yaml
-from envs.network_env import NetworkEnv
-from agents.dqn_agent import DQNAgent
 from models.encoder import GraphEncoder
+from agents.dqn_agent import DQNAgent
+from envs.network_env import NetworkEnv
+import yaml
+import matplotlib.pyplot as plt
+import torch
+import numpy as np
+import streamlit as st
+import sys
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE_DIR)
+
 
 st.set_page_config(page_title="6G Network Optimizer", layout="wide")
 st.title("6G GNN-DRL Network Optimization Dashboard")
 
-with open("configs/config.yaml") as f:
+with open(os.path.join(BASE_DIR, "configs/config.yaml")) as f:
     config = yaml.safe_load(f)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
-encoder = GraphEncoder(in_channels=3, hidden_channels=64, out_channels=32).to(device)
-gnn_path = "results/gnn_pretrained.pt"
+encoder = GraphEncoder(
+    in_channels=config['gnn']['in_channels'],
+    hidden_channels=config['gnn']['hidden_channels'],
+    out_channels=config['gnn']['out_channels'],
+    num_layers=config['gnn']['num_layers'],
+    dropout=config['gnn']['dropout'],
+).to(device)
+gnn_path = os.path.join(BASE_DIR, "results/gnn_pretrained.pt")
 if os.path.exists(gnn_path):
     encoder.gnn.load_state_dict(torch.load(gnn_path, map_location=device))
     st.info(f"GNN encoder loaded from {gnn_path}")
@@ -34,12 +42,13 @@ state_dim = env.get_gnn_state(encoder, device).shape[0]
 action_dim = env.action_space.n
 
 agent = DQNAgent(state_dim, action_dim, config)
-model_path = "results/dqn_ep500.pt"
+model_path = os.path.join(BASE_DIR, "results/dqn_ep500.pt")
 if os.path.exists(model_path):
     agent.load(model_path)
     st.success(f"Loaded trained DQN model from {model_path}")
 else:
-    st.warning("No trained DQN model found — using random policy. Run main.py first.")
+    st.warning(
+        "No trained DQN model found — using random policy. Run main.py first.")
 
 if st.button("Run Episode"):
     env.reset()
@@ -69,11 +78,14 @@ if st.button("Run Episode"):
     fig2, ax2 = plt.subplots(figsize=(6, 6))
     bs = env.bs_positions
     users = env.user_positions
-    ax2.scatter(bs[:, 0], bs[:, 1], c="red", marker="^", s=100, label="Base Stations")
-    ax2.scatter(users[:, 0], users[:, 1], c="blue", marker="o", s=40, label="Users")
+    ax2.scatter(bs[:, 0], bs[:, 1], c="red", marker="^",
+                s=100, label="Base Stations")
+    ax2.scatter(users[:, 0], users[:, 1], c="blue",
+                marker="o", s=40, label="Users")
     for u in range(env.num_users):
         b = env.allocations[u]
-        ax2.plot([users[u, 0], bs[b, 0]], [users[u, 1], bs[b, 1]], "gray", alpha=0.3)
+        ax2.plot([users[u, 0], bs[b, 0]], [
+                 users[u, 1], bs[b, 1]], "gray", alpha=0.3)
     ax2.set_title("Network Topology & Allocations")
     ax2.legend()
     st.pyplot(fig2)

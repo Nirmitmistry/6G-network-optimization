@@ -11,13 +11,7 @@ def build_network_graph(
     max_distance: float = 900.0,
     area_size: float = 3000.0,
 ):
-    """Build a PyG graph with richer node + edge features.
-
-    Node features (5D):
-        x_norm, y_norm, is_bs, norm_degree (placeholder), load_ratio
-    Edge features (3D):
-        norm_dist, delta_x, delta_y
-    """
+    
     num_bs = len(bs_positions)
     num_users = len(user_positions)
     all_positions = np.vstack([bs_positions, user_positions]).astype(np.float32)
