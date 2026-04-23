@@ -1,12 +1,31 @@
 network:
-  num_base_stations: 10
-  num_users: 30
-  area_size: 1000          # 1km x 1km in meters
-  frequency_ghz: 28        # mmWave 6G band
+  num_base_stations: 12
+  num_users: 40
+  area_size: 3000         
+  frequency_ghz: 28        
   max_bandwidth_mhz: 400
+  max_edge_distance: 900   
+
+gnn:
+  in_channels: 5           
+  hidden_channels: 128
+  out_channels: 64
+  num_layers: 4
+  dropout: 0.2
+  pretrain_epochs: 100
+  pretrain_lr: 0.0005
+  pretrain_batch: 32
+  num_pretrain_graphs: 500
 
 training:
-  episodes: 500
-  lr: 0.001
+  episodes: 800
+  lr: 0.0003
   gamma: 0.99
-  batch_size: 64
+  batch_size: 128
+  memory_size: 50000
+  target_update_freq: 5     
+  epsilon_start: 1.0
+  epsilon_min: 0.02
+  epsilon_decay: 0.997
+  hidden_dim: 512
+  tau: 0.005                

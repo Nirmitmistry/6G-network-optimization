@@ -1,7 +1,5 @@
 numpy
 networkx
-torch
-torch-geometric
 pyyaml
 streamlit
 stable-baselines3

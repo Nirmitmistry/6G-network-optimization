@@ -9,7 +9,7 @@ if __name__ == "__main__":
     print("Step 1: Pre-training GNN encoder...")
     train_gnn(config_path="configs/config.yaml")
 
-    print("Step 2: Training DQN agent...")
+    print("\nStep 2: Training DQN agent...")
     train_rl(config_path="configs/config.yaml")
 
     print("\nAll done. Check results/ for saved models and plots.")
