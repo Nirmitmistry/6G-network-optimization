@@ -14,11 +14,6 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-
-# ---------------------------------------------------------------------------
-# Prioritised Replay Buffer
-# ---------------------------------------------------------------------------
-
 class SumTree:
     """Binary sum-tree for O(log n) PER sampling."""
 
@@ -106,10 +101,6 @@ class PrioritisedReplayBuffer:
         return self.tree.n_entries
 
 
-# ---------------------------------------------------------------------------
-# Dueling DQN Network
-# ---------------------------------------------------------------------------
-
 class DuelingDQN(nn.Module):
     def __init__(self, state_dim: int, action_dim: int, hidden: int = 512):
         super().__init__()
@@ -141,10 +132,6 @@ class DuelingDQN(nn.Module):
         # Dueling aggregation: Q = V + (A - mean(A))
         return v + a - a.mean(dim=-1, keepdim=True)
 
-
-# ---------------------------------------------------------------------------
-# DQN Agent
-# ---------------------------------------------------------------------------
 
 class DQNAgent:
     def __init__(self, state_dim: int, action_dim: int, config: dict):
